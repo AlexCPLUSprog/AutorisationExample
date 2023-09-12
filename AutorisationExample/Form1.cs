@@ -26,10 +26,12 @@ namespace AutorisationExample
             $") VALUES  (" +
             $"'Admin', '0', 'Пользователь');";
         private string show_all_data = $"SELECT * FROM REQUISITES;";
+        private string show_all_users = $"SELECT NAME, PASSWORD FROM REQUISITES;";
         private string delete_main_table = $"DROP TABLE IF EXISTS REQUISITES;";
         private SQLiteDataAdapter _adapter;
         private DataSet _dataSet;
         private DBWork dBWork;
+        private SQLiteConnection _connection;
         
         public Form1()
         {
@@ -41,16 +43,26 @@ namespace AutorisationExample
         {
             Action<string> action = (string _text) => { lbConnect.Text = _text; };
             dBWork = new DBWork(dbName, action, create_table);
-            doSqlQuery(init_data);
+            _connection =  dBWork.getConnection;
             updateGridFromDB();
-            //_adapter = dBWork.getDataAdapter;
-            //_dataSet = dBWork.GetDataSet(show_all_data, action);
-            // Создаём привязку
-            //BindingSource bindingSource1 = new BindingSource();
-            //bindingSource1.DataSource = dBWork.getDataSet.Tables[0];
-            //dataGridViewUsers.DataSource = bindingSource1;
-            //SQLiteCommandBuilder sQLiteCommandBuilder = new SQLiteCommandBuilder(_adapter);
-            //_adapter.Update(_dataSet);
+            updateUsersFromDB();
+        }
+        private void updateUsersFromDB()
+        {
+            SQLiteCommand sQLiteCommand = 
+                new SQLiteCommand(show_all_users, _connection);
+            var reader =  sQLiteCommand.ExecuteReader();
+            User user = new User("name", 1);
+            users.Clear();
+            while (reader.Read())
+            {
+                IDataRecord tmp = (IDataRecord)reader;
+                string name = tmp[0].ToString();
+                int password = Convert.ToInt32(tmp[1]);
+                users.Add(new User(name, password));
+            } 
+            
+            
         }
         private void updateGridFromDB()
         {
@@ -76,6 +88,7 @@ namespace AutorisationExample
             dataGridViewUsers.DataSource = bindingSource1;
             SQLiteCommandBuilder sQLiteCommandBuilder = new SQLiteCommandBuilder(_adapter);
             _adapter.Update(_dataSet);
+            updateUsersFromDB();
         }
         private void doSqlQuery(string query)
         {
