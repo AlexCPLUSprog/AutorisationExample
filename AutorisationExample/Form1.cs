@@ -42,6 +42,19 @@ namespace AutorisationExample
             Action<string> action = (string _text) => { lbConnect.Text = _text; };
             dBWork = new DBWork(dbName, action, create_table);
             doSqlQuery(init_data);
+            updateGridFromDB();
+            //_adapter = dBWork.getDataAdapter;
+            //_dataSet = dBWork.GetDataSet(show_all_data, action);
+            // Создаём привязку
+            //BindingSource bindingSource1 = new BindingSource();
+            //bindingSource1.DataSource = dBWork.getDataSet.Tables[0];
+            //dataGridViewUsers.DataSource = bindingSource1;
+            //SQLiteCommandBuilder sQLiteCommandBuilder = new SQLiteCommandBuilder(_adapter);
+            //_adapter.Update(_dataSet);
+        }
+        private void updateGridFromDB()
+        {
+            Action<string> action = (string _text) => { lbConnect.Text = _text; };
             _adapter = dBWork.getDataAdapter;
             _dataSet = dBWork.GetDataSet(show_all_data, action);
             // Создаём привязку
@@ -52,7 +65,7 @@ namespace AutorisationExample
             _adapter.Update(_dataSet);
         }
 
-        private void updateDB()
+        private void updateDbFromGrid()
         {
             _adapter = dBWork.getDataAdapter;
             Action<string> action = (string _text) => { lbConnect.Text = _text; };
@@ -89,7 +102,7 @@ namespace AutorisationExample
                 foreach (var item in users)
                 {
                     addUserToDB(item.Name, item.Password);
-                    updateDB();
+                    updateGridFromDB();
                     labelUsers.Text += $"{item.Name} {item.Password}" + "\r\n";
                 }
             }
@@ -113,12 +126,12 @@ namespace AutorisationExample
 
         private void Form1_DoubleClick(object sender, EventArgs e)
         {
-            updateDB();
+            updateGridFromDB();
         }
 
         private void buttonSaveToDB_Click(object sender, EventArgs e)
         {
-
+            updateDbFromGrid();
         }
     }
 }
